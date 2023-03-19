@@ -1,6 +1,5 @@
 ﻿using Aspose.BarCode.BarCodeRecognition;
 using Aspose.BarCode.Generation;
-using QRLib.Code.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
