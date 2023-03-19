@@ -1,5 +1,5 @@
 ﻿using System;
-
+using ZXing.Net.Mobile;
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
@@ -15,6 +15,7 @@ namespace QrReaderGenerator.Droid
             base.OnCreate(savedInstanceState);
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            ZXing.Net.Mobile.Forms.Android.Platform.Init();
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
