@@ -12,35 +12,38 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using static System.Net.Mime.MediaTypeNames;
 using System.Net.NetworkInformation;
+using ZXing;
+using ZXing.QrCode;
 
 namespace QrReaderGenerator
 {
     public partial class MainPage : ContentPage
     {
-        private readonly QRCodeReaderGenerator _code;
-        private readonly PickOptions _pickOptions;
-        private readonly string DATA_DIR = 
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
         public MainPage()
         {
             InitializeComponent();
             BindingContext = this;
-            _code = new QRCodeReaderGenerator();
-            var customFileType =
-            new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {{ DevicePlatform.Android, new[] { ".png" } }});
-            var options = new PickOptions
-            {
-                PickerTitle = "Please select a file",
-                FileTypes = customFileType,
-                
-            };
-            _pickOptions = options;
-            zxing.OnScanResult += (result) => Device.BeginInvokeOnMainThread(() => {
-                GenerationResultlbl.Text = result.Text;
+            zxing.OnScanResult +=  (result) => Device.BeginInvokeOnMainThread(async () => {
+                zxing.IsAnalyzing = false;
+                textlbl.Text = result.Text;
+                DecorateLabel();
+                zxing.IsAnalyzing = true;
             });
+        }
 
+        private void DecorateLabel()
+        {
+            if (textlbl.Text.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+            {
+                linkBtn.IsVisible = true;
+                textlbl.TextDecorations = TextDecorations.Underline;
+            }
+            else
+            {
+                linkBtn.IsVisible = false;
+                textlbl.TextDecorations = TextDecorations.None;
+            }
         }
 
         private void GenerateBtn_Clicked(object sender, EventArgs e)
@@ -48,34 +51,8 @@ namespace QrReaderGenerator
             var input = QREnterText.Text;
             if (!string.IsNullOrEmpty(input))
             {
-                var fileName = _code.Generate(input, DATA_DIR);
-                ImageFile.Source = Path.Combine(DATA_DIR, fileName);
-            }
-        }
-
-        private async Task PickAndShow(PickOptions options)
-        {
-            try
-            {
-                var result = await FilePicker.PickAsync(options);
-                if (result != null)
-                {
-                    var fullPath = Path.Combine(DATA_DIR, result.FileName);
-                    var text = _code.Read(fullPath);
-                    ImageFile.Source = fullPath;
-                    FileName.Text = $"File Name: {result.FileName}";
-                    GenerationResultlbl.Text = text;
-                }
-            }
-            catch (Exception)
-            {
-                await DisplayAlert("Error", "Error while reading a file", "OK");
-            }
-        }
-
-        private async void PickerFileBtn_Clicked(object sender, EventArgs e)
-        {
-            await PickAndShow(_pickOptions);
+                barImg.BarcodeValue = input;
+            }           
         }
 
         protected override void OnAppearing()
@@ -87,6 +64,22 @@ namespace QrReaderGenerator
         {
             zxing.IsScanning = false;
             base.OnDisappearing();
+        }
+
+        public async Task OpenBrowser()
+        {
+            try
+            {              
+                await Browser.OpenAsync(textlbl.Text, BrowserLaunchMode.SystemPreferred);
+            }
+            catch (Exception)
+            {               
+            }
+        }
+
+        private async void linkBtn_Clicked(object sender, EventArgs e)
+        {
+            await OpenBrowser();
         }
     }
 }

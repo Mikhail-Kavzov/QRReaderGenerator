@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="QrReaderGenerator.MainPage">
+             x:Class="QrReaderGenerator.MainPage"
+             xmlns:zxing ="clr-namespace:ZXing.Net.Mobile.Forms;assembly=ZXing.Net.Mobile.Forms">
 
     <StackLayout>
         <StackLayout>
-            <Button x:Name="PickerFileBtn" Text="Choose a file" Clicked="PickerFileBtn_Clicked"></Button>
-            <Label x:Name="QREnterlbl">Enter text:</Label>
+            <Label x:Name="QREnterlbl" FontSize="24">Enter text:</Label>
             <Entry x:Name="QREnterText"></Entry>
             <Button x:Name="GenerateBtn" Text="Generate" Clicked="GenerateBtn_Clicked"></Button>
         </StackLayout>
         <StackLayout>
-            <Label x:Name="FileName"></Label>
-            <Image x:Name="ImageFile"></Image>
-            <zxing:ZXingScannerView x:Name="zxing" VerticalOptions="FillAndExpand"/>
-            <Label x:Name="GenerationResultlbl"></Label>
+            <zxing:ZXingBarcodeImageView x:Name="barImg"  BarcodeValue="0" HeightRequest="200" WidthRequest="200"/>
+            <zxing:ZXingScannerView IsScanning="True" HeightRequest="200" WidthRequest="200" IsAnalyzing="True" x:Name="zxing" VerticalOptions="FillAndExpand"/>
+            <Label FontSize="24"  x:Name="textlbl"/>
+            <Button x:Name="linkBtn" IsVisible="False" Clicked="linkBtn_Clicked" Text="Link"/>
         </StackLayout>
     </StackLayout>
 
