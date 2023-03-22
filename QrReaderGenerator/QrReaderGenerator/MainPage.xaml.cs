@@ -52,7 +52,7 @@ namespace QrReaderGenerator
             if (!string.IsNullOrEmpty(input))
             {
                 barImg.BarcodeValue = input;
-            }           
+            }          
         }
 
         protected override void OnAppearing()
